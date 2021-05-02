@@ -62,9 +62,43 @@ class Player {
 }
 const player = new Player();
 
+const bubblesArray = [];
+class Bubble {
+    constructor(){
+        this.x = Math.random() * canvas.width;
+        this.y = Math.random() * canvas.height;
+        this.radius = 50;
+        this.speed = Math.random() * 5 + 1;
+        this.distance;
+    }
+    update(){
+        this.y -= this.speed;
+    }
+    draw(){
+        ctx.fillStyle = 'blue'
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.radius, 0, Math.PI *2);
+        ctx.fill();
+        ctx.closePath();
+        ctx.stroke();
+    }
+}
+function handleBubbles() {
+    if (gameFrame % 50 == 0){
+        bubblesArray.push(new Bubble());
+    }
+    for (let i = 0; i < bubblesArray.length; i++){
+        bubblesArray[i].update();
+        bubblesArray[i].draw;
+    }
+}
+
 function animate() {
+    ctx.clearRect(0,0, canvas.width, canvas.height);
+    handleBubbles();
     player.update();
     player.draw();
+    gameFrame++;
     requestAnimationFrame(animate);
 }
 animate();
