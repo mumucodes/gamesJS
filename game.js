@@ -7,7 +7,7 @@ canvas.height = 500;
 let score = 0;
 let gameFrame= 0;
 ctx.font = '50px Georgia';
-
+let gameSpeed = 1;
 //mouse interactivity
 let canvasPosition = canvas.getBoundingClientRect();
 
@@ -85,6 +85,9 @@ const player = new Player();
 
 //bubbles
 const bubblesArray = [];
+const bubbleImage = new Image();
+bubbleImage.src = './bubbles.png';
+
 class Bubble{
     constructor(){
         this.x = Math.random() * canvas.width;
@@ -102,12 +105,13 @@ class Bubble{
         this.distance = Math.sqrt(dx*dx + dy*dy);
     }
     draw(){
-        ctx.fillStyle = 'blue';
-        ctx.beginPath();
-        ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
-        ctx.fill();
-        ctx.closePath();
-        ctx.stroke();
+        // ctx.fillStyle = 'blue';
+        // ctx.beginPath();
+        // ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+        // ctx.fill();
+        // ctx.closePath();
+        // ctx.stroke();
+        ctx.drawImage(bubbleImage, this.x -65, this.y -65, this.radius * 2.7, this.radius * 2.7 );
     }
 }
 const bubblePop1 = document.createElement('audio');
@@ -145,10 +149,34 @@ function handleBubbles(){
 
     }
 }
+//repeating backgrounds
+const background = new Image();
+background.src = './background1.png'
 
+const BG = {
+    x1: 0,
+    x2: canvas.width,
+    y: 0,
+    width: canvas.width,
+    height: canvas.height,
+
+}
+function handleBackground(){
+    BG.x1 -= gameSpeed;
+    if(BG.x1 < -BG.width) BG.x1 = BG.width;
+    BG.x2 -= gameSpeed;
+    if(BG.x2 < -BG.width) BG.x2 = BG.width;
+    ctx.drawImage(background, BG.x1, BG.y, BG.width, BG.height);
+    ctx.drawImage(background, BG.x2, BG.y, BG.width, BG.height);
+}
+
+const enemyImage = new Image();
+enemyImage.src = './enemy1.png';
+}
 //animation loop
 function animate(){
     ctx.clearRect(0, 0, canvas.width, canvas.height);
+    handleBackground();
     handleBubbles();
     player.update();
     player.draw();
