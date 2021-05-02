@@ -6,8 +6,9 @@ canvas.height = 500;
 
 let score = 0;
 let gameFrame= 0;
-ctx.font = '50px Georgia';
+ctx.font = '40px Georgia';
 let gameSpeed = 1;
+let gameOver = false; 
 //mouse interactivity
 let canvasPosition = canvas.getBoundingClientRect();
 
@@ -62,12 +63,12 @@ class Player {
             ctx.lineTo(mouse.x, mouse.y);
             ctx.stroke();
         }
-        ctx.fillStyle = 'red';
-        ctx.beginPath();
-        ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
-        ctx.fill();
-        ctx.closePath();
-        ctx.fillRect(this.x, this.y, this.radius, 10);
+        // ctx.fillStyle = 'red';
+        // ctx.beginPath();
+        // ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+        // ctx.fill();
+        // ctx.closePath();
+        // ctx.fillRect(this.x, this.y, this.radius, 10);
         
         ctx.save();
         ctx.translate(this.x, this.y);
@@ -172,6 +173,64 @@ function handleBackground(){
 
 const enemyImage = new Image();
 enemyImage.src = './enemy1.png';
+
+class Enemy {
+    constructor(){
+        this.x = canvas.width - 200;
+        this.y = Math.random() * (canvas.height - 150) + 90;
+        this.radius = 60;
+        this.speed = Math.random() * 2 + 2;
+        this.frame = 0;
+        this.frameX = 0;
+        this.frameY = 0;
+        this.spriteWidth = 475;
+        this.spriteHeight = 330;
+    }
+    draw(){
+        // ctx.fillStyle = 'purple';
+        // ctx.beginPath();
+        // ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+        // ctx.fill();
+        ctx.drawImage(enemyImage, this.frameX * this.spriteWidth, this.frameY * this.spriteHeight, this.spriteWidth, this.spriteHeight, this.x - 60, this.y - 45  , this.spriteWidth / 4, this.spriteHeight / 4); 
+    }
+    update(){
+        this.x -= this.speed;
+        if(this.x < 0 - this.radius * 2){
+            this.x = canvas.width + 200;
+            this.y = Math.random() * (canvas.height - 150) + 90;
+            this.speed = Math.random() * 2 + 2;
+        }
+        if (gameFrame % 5 == 0){
+            this.frame++;
+            if(this.frame >= 12) this.frame = 0;
+            if(this.frame == 3 || this.frame == 7 || this.frame || 11){
+                this.frameX = 0;
+            } else {
+                this.frameX++;
+            }
+            if(this.frame < 3) this.frameY = 0;
+            else if (this.frame < 7) this.frameY = 1;
+            else if (this.frame < 11) this.frameY = 2;
+            else this.frameY= 0;
+        }
+        const dx = this.x - player.x;
+        const dy = this.y - player.y;
+        const distance = Math.sqrt(dx * dx + dy * dy);
+        if (distance < this.radius + player.radius){
+            handleGameOver();
+        }
+    }
+}
+const enemy1 = new Enemy();
+function handleEnemies(){
+    enemy1.draw();
+    enemy1.update();
+   
+}
+function handleGameOver(){
+    ctx.fillStyle = 'white';
+    ctx.fillText('GAME OVER, You scored ' + score, 120, 250);
+    gameOver = true;
 }
 //animation loop
 function animate(){
@@ -180,10 +239,11 @@ function animate(){
     handleBubbles();
     player.update();
     player.draw();
+    handleEnemies();
     ctx.fillStyle = 'black';
     ctx.fillText('score: ' + score, 10, 50);
     gameFrame++;
-    requestAnimationFrame(animate);
+    if(!gameOver) requestAnimationFrame(animate);
 }
 animate();
 
